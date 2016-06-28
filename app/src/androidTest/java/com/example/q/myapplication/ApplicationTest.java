@@ -1,4 +1,4 @@
-package com.example.q.project1;
+package com.example.q.myapplication;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
