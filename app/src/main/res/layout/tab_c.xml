@@ -9,7 +9,7 @@
     tools:context="com.example.q.myapplication.MainActivity$PlaceholderFragment">
 
     <TextView
-        android:id="@+id/section_label"
+        android:text="C"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
