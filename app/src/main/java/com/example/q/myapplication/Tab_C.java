@@ -129,7 +129,8 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
 
 
                 Intent intent = new Intent(getActivity(), Player.class);
-                intent.putExtra("keyword",getVideoId(getNearbyPlaceName(point)));
+                intent.putExtra("id",getVideoId(getNearbyPlaceName(point)));
+                intent.putExtra("keyword",getNearbyPlaceName(point));
                 startActivity(intent);
 
             }
@@ -229,11 +230,16 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (_map != null&&getChildFragmentManager().findFragmentById(R.id.map)!=null) {
-            getFragmentManager().beginTransaction()
-                    .remove(getChildFragmentManager().findFragmentById(R.id.map))
-                    .commit();
-            _map = null;
+        try {
+            if (_map != null && getChildFragmentManager().findFragmentById(R.id.map) != null) {
+                getFragmentManager().beginTransaction()
+                        .remove(getChildFragmentManager().findFragmentById(R.id.map))
+                        .commit();
+                _map = null;
+
+            }
+        }
+        catch(Exception e){
 
         }
     }
