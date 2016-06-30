@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -42,7 +43,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Player"></activity>
+        <activity android:name=".Player" />
+        <activity android:name=".PlayerForTab_C" />
+        <activity android:name=".StartActivityForTab_c"></activity>
     </application>
 
 </manifest>
