@@ -4,6 +4,7 @@ package com.example.q.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -115,7 +116,7 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
     public void onMapReady(GoogleMap map) {
         _map = map;
         LatLng kaist = new LatLng(36.372125, 127.360513);
-
+        map.setMyLocationEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setRotateGesturesEnabled(false);
         map.moveCamera(CameraUpdateFactory.newLatLng(kaist));
@@ -127,8 +128,9 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
             public void onMapClick(LatLng point) {
 
 
-                Toast toast = Toast.makeText(getContext(), getNearbyPlaceName(point),Toast.LENGTH_SHORT);
-                toast.show();
+                Intent intent = new Intent(getActivity(), Player.class);
+                intent.putExtra("keyword",getVideoId(getNearbyPlaceName(point)));
+                startActivity(intent);
 
             }
         });
@@ -148,6 +150,35 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
             // parse JSON
 
             return json.getJSONArray("results").getJSONObject(0).getString("name");
+
+        }catch(MalformedURLException e){
+            System.err.println("Malformed URL");
+            e.printStackTrace();
+            return null;
+        }catch(JSONException e) {
+            System.err.println("JSON parsing error");
+            e.printStackTrace();
+            return null;
+        }catch(IOException e){
+            System.err.println("URL Connection failed");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getVideoId(String keyword){
+        String videoURL = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=AIzaSyDXgwnlZ35SmzwN1NA2GZsPKl3NUkEGeX0&q=";
+        String urlString = videoURL + keyword;
+        try {
+            // call API by using HTTPURLConnection
+            URL url = new URL(urlString);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            JSONObject json = new JSONObject(getStringFromInputStream(in));
+
+            // parse JSON
+
+            return json.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId");
 
         }catch(MalformedURLException e){
             System.err.println("Malformed URL");
@@ -198,9 +229,9 @@ public class Tab_C extends Fragment implements OnMapReadyCallback{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (_map != null) {
+        if (_map != null&&getChildFragmentManager().findFragmentById(R.id.map)!=null) {
             getFragmentManager().beginTransaction()
-                    .remove(getFragmentManager().findFragmentById(R.id.map))
+                    .remove(getChildFragmentManager().findFragmentById(R.id.map))
                     .commit();
             _map = null;
 
