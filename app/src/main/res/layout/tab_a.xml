@@ -7,27 +7,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.q.myapplication.MainActivity$PlaceholderFragment">
-
-    <TextView
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="11"
-        android:id="@+id/textView" />
+        android:id="@+id/listPerson"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
-        android:layout_alignParentBottom="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button2"
-        android:layout_alignBottom="@+id/button"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

@@ -65,8 +65,7 @@ public class ListViewAdapter extends BaseAdapter {
             holder.mPhoto.setVisibility(View.VISIBLE);
             holder.mPhoto.setImageDrawable(mData.mPhoto);
         }else {
-            //Drawable drawable = (Drawable)(new BitmapDrawable(BitmapFactory.decodeFile(String.valueOf(R.drawable.ic_launcher))));
-            //holder.mPhoto.setImageDrawable(drawable);
+
         }
 
         holder.mName.setText(mData.mName);

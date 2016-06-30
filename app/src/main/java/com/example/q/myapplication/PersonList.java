@@ -1,8 +1,10 @@
 package com.example.q.myapplication;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +12,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,14 +40,42 @@ public class PersonList extends AppCompatActivity {
     ListViewAdapter listViewAdapter;
     JSONObject object;
     JSONArray contactList;
+    int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 201;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person_list);
 
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
         listPerson = (ListView)findViewById(R.id.listPerson);
         getList();
+
     }
 
 
@@ -95,9 +127,7 @@ public class PersonList extends AppCompatActivity {
                     Drawable drawable = (Drawable)(new BitmapDrawable(contactPhoto));
                     listViewAdapter.addItem(drawable, contactCursor.getString(1), contactCursor.getString(0));
                 }else {
-
-                    Drawable drawable = (Drawable)(new BitmapDrawable(BitmapFactory.decodeFile(String.valueOf(R.drawable.ic_launcher))));
-                    listViewAdapter.addItem(drawable,contactCursor.getString(1),contactCursor.getString(0));
+                    listViewAdapter.addItem(null,contactCursor.getString(1),contactCursor.getString(0));
                 }
             }while(contactCursor.moveToNext());
         }
@@ -109,6 +139,7 @@ public class PersonList extends AppCompatActivity {
             e.printStackTrace();
         }
        //JSONObject k = new JSONObject()
+        /*
         try {
             JSONArray Array = new JSONArray(object.getString("Contact"));
             for (int i = 0; i < Array.length(); i++) {
@@ -119,8 +150,7 @@ public class PersonList extends AppCompatActivity {
         }catch (JSONException e){
             e.printStackTrace();
         }
-        //리스트에 연결할 adapter 설정
-        //ArrayAdapter adp = new ArrayAdapter(this,R.layout.listlayout, persons);
+        */
 
 
         //리스트뷰에 표시
@@ -143,17 +173,5 @@ public class PersonList extends AppCompatActivity {
             startActivity(intent);
         }
     }
-    /*
-    public View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
 
-        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }
-*/
 }
