@@ -1,17 +1,23 @@
 package com.example.q.myapplication;
 
+import android.*;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +45,7 @@ public class Tab_B extends Fragment {
     private GridViewAdapter gridAdapter;
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
+    int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 202;
 
     public Tab_B(){}
 
@@ -81,55 +88,57 @@ public class Tab_B extends Fragment {
                     }
                 });
             }
-            else if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK && null != data) {
-                // Get the Image from data
+            else {
+                if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK && null != data) {
+                    // Get the Image from data
 
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-                // Get the cursor
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
+                    // Get the cursor
+                    Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                            filePathColumn, null, null, null);
+                    // Move to first row
+                    cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imgDecodableString = cursor.getString(columnIndex);
-                cursor.close();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    imgDecodableString = cursor.getString(columnIndex);
+                    cursor.close();
 
-                try {
-                    FileOutputStream outputStream;
-                    outputStream = getActivity().openFileOutput("mygallery.txt", getContext().MODE_APPEND);
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-                    writer.write(imgDecodableString);
-                    writer.write("\n");
-                    writer.close();
-                    outputStream.close();
-                    gridView = (GridView) getView().findViewById(R.id.gridView);
-                    gridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, getData());
-                    gridView.setAdapter(gridAdapter);
-                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                            ImageItem item = (ImageItem) parent.getItemAtPosition(position);
+                    try {
+                        FileOutputStream outputStream;
+                        outputStream = getActivity().openFileOutput("mygallery.txt", getContext().MODE_APPEND);
+                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+                        writer.write(imgDecodableString);
+                        writer.write("\n");
+                        writer.close();
+                        outputStream.close();
+                        gridView = (GridView) getView().findViewById(R.id.gridView);
+                        gridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, getData());
+                        gridView.setAdapter(gridAdapter);
+                        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                                ImageItem item = (ImageItem) parent.getItemAtPosition(position);
 
-                            //Create intent
-                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                            intent.putExtra("title", item.getTitle());
-                            intent.putExtra("image", item.getImage());
+                                //Create intent
+                                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                                intent.putExtra("title", item.getTitle());
+                                intent.putExtra("image", item.getImage());
 
-                            //Start details activity
-                            startActivityForResult(intent,2);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+                                //Start details activity
+                                startActivityForResult(intent, 2);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    // Set the Image in ImageView after decoding the String
+                    //imgView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
+
+                } else {
+                    Toast.makeText(getActivity(), "You haven't picked Image", Toast.LENGTH_LONG).show();
                 }
-
-                // Set the Image in ImageView after decoding the String
-                //imgView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
-
-            } else {
-                Toast.makeText(getActivity(), "You haven't picked Image",Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG)
@@ -141,6 +150,32 @@ public class Tab_B extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
 
         View rootView = inflater.inflate(R.layout.tab_b, container, false);
 

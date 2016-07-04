@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ public class DetailsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_activity);
 
+        final String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath();
         final String title = getIntent().getStringExtra("title");
         final int position = getIntent().getIntExtra("position", -1);
         Bitmap bitmap = BitmapFactory.decodeFile(title);//BitmapFactory.decodeResource(getResources(), imgs.getResourceId(getIntent().getIntExtra("image",-1), -1));
@@ -62,6 +64,7 @@ public class DetailsActivity extends ActionBarActivity {
                     }
                     reader.close();
                     inputStream.close();
+
                     FileOutputStream outputStream = openFileOutput("mygallery.txt", Context.MODE_PRIVATE);
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
                     writer.write(dummy);
